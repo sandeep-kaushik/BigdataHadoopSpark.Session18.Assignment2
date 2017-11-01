@@ -62,7 +62,7 @@ else "20-35"
 
 val frequencyPrAgGrp = ageGroup.map(x => ((x._2._1 , x._2._2._1) , x._2._2._2)).groupByKey().map(x=>(x._1 ,x._2.sum)).sortBy(x => -x._2)
 
-
+frequencyPrAgGrp.foreach(println)
 
 
 
