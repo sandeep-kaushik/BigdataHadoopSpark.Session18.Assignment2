@@ -1,0 +1,84 @@
+LOAD FILE )--
+
+val travelSet = sc.textFile("/home/acadgild/Desktop/18.2/S18_Dataset_Holidays.txt")
+var travelTuples  =  travelSet.map(x=> {
+                          val row = x.split(",").toList
+                          (row.apply(0).toInt, row.apply(1), row.apply(2), row.apply(3), row.apply(4).toInt, row.apply(5).toInt)
+                         })
+
+val transport = sc.textFile("/home/acadgild/Desktop/18.2/S18_Dataset_Transport.txt")
+var transportTuples = transport.map(x=> {
+                          val row = x.split(",").toList
+                          (row.apply(0), row.apply(1).toInt)
+                         })
+
+val userDetails = sc.textFile("/home/acadgild/Desktop/18.2/S18_Dataset_User_details.txt")
+var userTuples = userDetails.map(x=> {
+                          val row = x.split(",").toList
+                          (row.apply(0).toInt, row.apply(1), row.apply(2).toInt)
+                         })
+
+
+-------------------------------------------------------------------------
+
+task-1)
+--Which route is generating the most revenue per year
+
+ val travelrdd = travelTuples.map(x=>(x._4,(x._2,x._3,x._6)))
+ val route = travelrdd.join(transportTuples).map(x => x._2)
+ val PerYear = route.groupByKey()
+ val revenuePrYr = PerYear.map(x=> (x._1,x._2.sum)).sortBy(x => -x._2) 
+ val highestRevenue = revenuePrYr.first()
+
+-------------------------------------------------------------------------
+
+task-2)
+--What is the total amount spent by every user on air-travel per year
+
+val travelrdd = travelTuples.map(x=>(x._4,(x._1,x._6)))
+ val route = travelrdd.join(transportTuples).map(x => x._2)
+ val PerYear = route.groupByKey()
+ val amountSpendPrYr = PerYear.map(x=> (x._1,x._2.sum)).sortBy(x => x._1._1) 
+ amountSpendPrYr.foreach(println)
+
+-------------------------------------------------------------------------
+
+
+
+
+
+task-3)
+
+Considering age groups of < 20 , 20-35, 35 > ,Which age group is travelling the most every year.
+
+
+val travelingData = travelTuples.map(x => (x._1 ,(x._6, 1)))
+
+val ageGroup = userTuples.map(x=> x._1->{
+if (x._3<20) "<20"
+else if (x._3 > 35) ">35"
+else "20-35"
+}).join(travelingData)
+
+val frequencyPrAgGrp = ageGroup.map(x => ((x._2._1 , x._2._2._1) , x._2._2._2)).groupByKey().map(x=>(x._1 ,x._2.sum)).sortBy(x => -x._2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
